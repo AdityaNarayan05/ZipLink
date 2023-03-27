@@ -20,6 +20,20 @@
     "tailwindcss": "^3.2.7"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "body-parser": "^1.20.2",
+    "deepai": "^1.0.21",
+    "dotenv": "^16.0.3",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "http": "^0.0.1-security",
+    "loadash": "^1.0.0",
+    "mongoose": "^7.0.3",
+    "mongoose-findorcreate": "^3.0.0",
+    "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local-mongoose": "^8.0.0",
+    "redis": "^4.6.5",
+    "socket.io": "^4.6.1"
   }
 }
