@@ -15,10 +15,11 @@ var os = require("os");
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-const server = http.createServer(app); 
+const server = http.createServer(app);
 
 //ShortURL Logic
 var ShortURL = new function () {
+
     var _alphabet = '23456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ-_',
         _base = _alphabet.length;
 
@@ -38,6 +39,7 @@ var ShortURL = new function () {
         }
         return num;
     };
+
 };
 
 //Stores the generated Hash Value
@@ -49,8 +51,22 @@ var isAlias = false;
 //Stores whether the Hash is already taken or not.
 var already = false;
 
+//Session & Cookie Management Plugging in
+app.use(session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+}));
 
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+//Passport (Authorization Module) Plugging in
+app.use(passport.initialize());
+app.use(passport.session());
+
+/*
+Mongoose Connection URL
+- Use process.env.DB_URI for MongoDB hosted on Atlas
+*/
+mongoose.connect(process.env.DB_URL);
 
 //User Schema for MongoDB (Mongoose)
 const userSchema = new mongoose.Schema({
@@ -100,12 +116,36 @@ userSchema.plugin(findOrCreate);
 //Compiling User Schema into User Model
 const User = new mongoose.model("User", userSchema);
 
+//Plugging in Passport User Creation Strategy
+passport.use(User.createStrategy());
 
+//Persisting user data into session and cookies (After successful authentication)
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
 
+//Retrieving user data from saved session and cookies
+passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
 
-
-
-
+//Plugging in Google OAuth2.0 Authentication Strategy and adding Client ID, Client Secret and Callback URL.
+passport.use(new GoogleStrategy({
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/keepclone",
+    userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo',
+    passReqToCallback: true
+},
+    function (request, accessToken, refreshToken, profile, done) {
+        //Creating User object if not found already inside the database
+        User.findOrCreate({ googleId: profile.id }, function (err, user) {
+            return done(err, user);
+        });
+    }
+));
 
 //Get request for "/" route
 app.get("/", function (req, res) {
@@ -320,7 +360,6 @@ app.post("/shorten", async function (req, res) {
     }
 });
 
-//heruku paid kar diya hae yaar
 //3000 for localhost (127.0.0.1) and other Node.JS services
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, function () {
