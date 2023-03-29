@@ -1,2 +1,10 @@
 # Dependency dir.
 node_modules/
+
+# Logs
+logs
+
+# dotenv environment variable files
+.env
+
+atlas_credentials.txt

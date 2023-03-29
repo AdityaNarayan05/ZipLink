@@ -50,9 +50,55 @@ var isAlias = false;
 var already = false;
 
 
+mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
+//User Schema for MongoDB (Mongoose)
+const userSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    password: String,
+    googleId: String,
+    links: [Number],
+});
 
+//Single Link Model Schema for MongoDB (Mongoose)
+const linkSchema = new mongoose.Schema({
+    _id: Number,
+    link: String,
+    isCustom: Boolean,
+    hash: String,
+    clicks: Number,
+});
 
+//Schema for next link id model
+const nextSchema = new mongoose.Schema({
+    _id: Number,
+    next: Number,
+});
+
+//Compiling Single Link Schema into Link Model
+const Link = new mongoose.model("Link", linkSchema);
+
+//Compiling Single Next Schema into Next Model
+const Next = new mongoose.model("Next", nextSchema);
+
+//Setting the first number to be 1 (to be run for first time only)
+const firstNum = new Next({
+    _id: 1,
+    next: 1,
+});
+
+// Saving the firstNum to database
+//firstNum.save();
+
+//Plugging in Mongoose Plugin for Passport
+userSchema.plugin(passportLocalMongoose);
+
+//Plugging in findOrCreate helper module for Mongoose to create or find user object
+userSchema.plugin(findOrCreate);
+
+//Compiling User Schema into User Model
+const User = new mongoose.model("User", userSchema);
 
 
 
@@ -155,7 +201,7 @@ app.get("/logout", function (req, res) {
     });
 });
 
-//Get reqest for "/contact" route
+//Get request for "/contact" route
 app.get("/contact", function (req, res) {
     res.render("contact");
 });
@@ -268,15 +314,14 @@ app.post("/shorten", async function (req, res) {
                         res.redirect("/shorten");
                         isAlias = true;
                     }
-
                 }
             });
         }
     }
 });
 
-
-//3000 for localhost (127.0.0.1) and dynamic port for Heroku and other Node.JS services
+//heruku paid kar diya hae yaar
+//3000 for localhost (127.0.0.1) and other Node.JS services
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, function () {
     console.log("App successfully spinned up on port 3000");
