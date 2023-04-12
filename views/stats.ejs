@@ -1,0 +1,70 @@
+<%- include("header") %>
+
+<section class="bg-gray-50 dark:bg-gray-900">
+  <div class="flex flex-col items-center justify-center px-6 mx-auto">
+    <h1
+      class="py-8 text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white"
+    >
+      Analytics
+    </h1>
+    <input type="text" id="golink" class="mb-8 block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search By Link, Hash, ID, Custom, Clicks..." required>
+    <div
+      class="w-full bg-white rounded-lg shadow dark:border dark:bg-primary-700 dark:bg-primary-700"
+    >
+      <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+        <table
+          class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
+        >
+          <thead
+            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+          >
+            <tr>
+              <th scope="col" class="py-3 px-6">Links</th>
+              <th scope="col" class="py-3 px-6">ID</th>
+              <th scope="col" class="py-3 px-6">Clicks</th>
+              <th scope="col" class="py-3 px-6">Hash</th>
+              <th scope="col" class="py-3 px-6">Custom Link</th>
+            </tr>
+          </thead>
+          <tbody id="tabledata">
+            <% for(var i = 0; i<links.length; i++){ %> 
+            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+              <th
+                scope="row"
+                class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+              <%= links[i].link %>
+              </th>
+              <td class="py-4 px-6"><%= links[i]._id %></td>
+              <td class="py-4 px-6"><%= links[i].clicks %></td>
+              <td class="py-4 px-6"><%= links[i].hash %></td>
+              <td class="py-4 px-6">
+                <% if(links[i].link === true){ %> 
+                    <%= "Yes" %> 
+                <% } else{ %>
+                    <%= "No" %> 
+                    <% } %>   
+            </td>
+            </tr>
+            <% } %> 
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="py-8"></div>
+  </div>
+</section>
+
+<script>
+  $(document).ready(function() {
+      $("#golink").on("keyup", function() {
+          var value = $(this).val().toLowerCase();
+          $("#tabledata tr").filter(function() {
+              $(this).toggle($(this).text()
+              .toLowerCase().indexOf(value) > -1)
+          });
+      });
+  });
+</script>
+
+<%- include("footer") %>
