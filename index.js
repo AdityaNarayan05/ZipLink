@@ -145,7 +145,7 @@ passport.use(new GoogleStrategy({
             return done(err, user);
         });
     }
-));
+));   
 
 //Get request for "/" route
 app.get("/", function (req, res) {
