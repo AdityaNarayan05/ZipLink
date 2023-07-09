@@ -29,7 +29,12 @@ Mongoose Connection URL
 - Use process.env.DB_URI for MongoDB hosted on Atlas
 - Define DB_URI in the .env file, where it's value has to be the connection URL provided by MongoDB Atlas Cluster.
 */
-mongoose.connect(process.env.DATABASE_URL);
+mongoose.connect(process.env.DATABASE_URL).then(() => {
+    console.log("DB Connetion Successfull");
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });;
 
 const authRouter = require("./routes/authRoutes");
 const homeRouter = require("./routes/homeRoutes");
