@@ -42,4 +42,4 @@ Following Node Modules are used:
 * mongoose-findorcreate - a utility mongoose function
 * http - to handle http requests and server
 
-## Check out some [screenshots of the application here]()
+## Check out some [screenshots of the application here](https://github.com/AdityaNarayan05/ZipLink/blob/main/preview.md)
